@@ -9,6 +9,9 @@ import org.springframework.security.core.GrantedAuthority;
 * @since 1.01.2023
 * Authority class, which implements GrantedAuthority
 */
+
+@Entity
+@Table(name = "authority")
 public class Authorities implements GrantedAuthority {
 
     @Id

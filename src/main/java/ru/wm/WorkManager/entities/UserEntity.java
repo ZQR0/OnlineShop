@@ -3,6 +3,7 @@ package ru.wm.WorkManager.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import net.minidev.json.annotate.JsonIgnore;
@@ -22,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "user_table")
+@Data
 public class UserEntity implements UserDetails {
 
     @Id
@@ -67,6 +69,8 @@ public class UserEntity implements UserDetails {
 
 
     // Constructor
+    public UserEntity() {}
+
     public UserEntity(String email, String username, String password, Date registerTime) {
         this.email = email;
         this.username = username;

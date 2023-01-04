@@ -18,4 +18,5 @@ public interface UserServiceInterface {
     List<UserEntity> getAllUsers();
     void register(UserDTO dto);
     UserEntity findByEmail(String email);
+    UserEntity findByUsername(String username);
 }

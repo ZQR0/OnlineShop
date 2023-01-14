@@ -59,6 +59,11 @@ public class UserEntity implements UserDetails {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date registerTime;
 
+    @Column(name = "role", nullable = false)
+    @Getter
+    @Setter
+    private String role;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_authority",
@@ -123,6 +128,7 @@ public class UserEntity implements UserDetails {
         private String _username;
         private String _password;
         private Date _registerTime;
+        private String role;
 
         public UserBuilder setEmail(String email) {
             this._email = email;
@@ -141,6 +147,11 @@ public class UserEntity implements UserDetails {
 
         public UserBuilder date(Date registerTime) {
             this._registerTime = registerTime;
+            return this;
+        }
+
+        public UserBuilder role(String role) {
+            this.role = role;
             return this;
         }
 

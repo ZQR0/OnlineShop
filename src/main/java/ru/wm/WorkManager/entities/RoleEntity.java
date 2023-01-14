@@ -1,7 +1,17 @@
 package ru.wm.WorkManager.entities;
 
 public enum RoleEntity {
-    ROLE_ADMIN,
-    ROLE_USER,
-    ROLE_BANNED;
+    ADMIN("admin"),
+    USER("user"),
+    BANNED("banned");
+
+    private String _roleName;
+
+    RoleEntity(String roleName) {
+        this._roleName = roleName;
+    }
+
+    public String getRoleName() {
+        return this._roleName;
+    }
 }

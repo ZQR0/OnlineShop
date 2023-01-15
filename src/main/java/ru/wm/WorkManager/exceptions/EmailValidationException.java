@@ -1,5 +1,8 @@
 package ru.wm.WorkManager.exceptions;
 
+import com.google.gson.Gson;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,18 +17,20 @@ public class EmailValidationException extends Throwable {
         super(errorMessage);
     }
 
+    // Custom implementation of printStackTrace() method to get JSON
     @Override
     public void printStackTrace() {
-        this.getErrorLog();
-        super.printStackTrace();
+        StackTraceElement elements[] = this.getStackTrace();
+        Gson gson = new Gson();
+        Map<String, String> error = new HashMap<>();
+
+        for (StackTraceElement e : elements) {
+            error.put("message", "email validation failed");
+            error.put("error", Arrays.toString(this.getStackTrace()));
+            error.put("tip", "check is email field contains '@' char & is this email actually");
+        }
+
+        System.out.println(gson.toJson(error));
     }
 
-    private void getErrorLog() {
-        Map<String, String> message = new HashMap<>();
-        message.put("status", "error");
-        message.put("message", "email validation failed");
-        message.put("tip", "check is '@' character in your input email");
-
-        System.out.println(message);
-    }
 }

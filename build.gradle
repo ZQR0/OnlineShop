@@ -42,7 +42,8 @@ dependencies {
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.23.1'
 	// https://mvnrepository.com/artifact/commons-validator/commons-validator
 	implementation group: 'commons-validator', name: 'commons-validator', version: '1.7'
-
+	// GSON Google dep for gradle
+	implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 tasks.named('test') {

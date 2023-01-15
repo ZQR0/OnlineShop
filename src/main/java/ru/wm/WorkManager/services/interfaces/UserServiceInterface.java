@@ -17,9 +17,9 @@ import java.util.Optional;
 * This interface contains all method to implement in UserService.java
 */
 public interface UserServiceInterface {
-    Optional<UserEntity> findById(Long id);
+    Optional<UserEntity> findById(Long id) throws UserNotFoundException;
     List<UserEntity> getAllUsers();
     void register(UserDTO dto) throws EmailValidationException;
-    UserEntity findByEmail(String email);
-    UserEntity findByUsername(String username) throws UsernameNotFoundException;
+    Optional<UserEntity> findByEmail(String email) throws UserNotFoundException;
+    Optional<UserEntity> findByUsername(String username) throws UsernameNotFoundException;
 }

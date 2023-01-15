@@ -1,5 +1,6 @@
 package ru.wm.WorkManager.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,7 +13,10 @@ import java.util.Date;
 */
 @Data
 public class UserDTO {
+    @JsonProperty("email")
     private String email;
+    @JsonProperty("username")
     private String username;
+    @JsonProperty("password")
     private String password;
 }

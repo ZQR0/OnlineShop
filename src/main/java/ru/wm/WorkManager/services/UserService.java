@@ -11,9 +11,11 @@ import ru.wm.WorkManager.dto.UserDTO;
 import ru.wm.WorkManager.entities.RoleEntity;
 import ru.wm.WorkManager.entities.UserEntity;
 import ru.wm.WorkManager.exceptions.EmailValidationException;
+import ru.wm.WorkManager.exceptions.UserNotFoundException;
 import ru.wm.WorkManager.repositories.UserRepository;
 import ru.wm.WorkManager.services.interfaces.UserServiceInterface;
 import ru.wm.WorkManager.utils.DateProvider;
+import ru.wm.WorkManager.utils.ValidationComponent;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +35,15 @@ public class UserService implements UserServiceInterface {
     @Autowired
     private DateProvider dateProvider;
 
+    @Autowired
+    private ValidationComponent validationComponent;
+
     @Override
-    public Optional<UserEntity> findById(Long id) {
-        return this.repository.findById(id);
+    public Optional<UserEntity> findById(Long id) throws UserNotFoundException {
+        Optional<UserEntity> user = this.repository.findById(id);
+        if (user.isPresent()) return user;
+
+        throw new UserNotFoundException("User not found");
     }
 
     @Override
@@ -44,20 +52,27 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public UserEntity findByEmail(String email) {
-        return this.repository.findByEmail(email);
+    public Optional<UserEntity> findByEmail(String email) throws UserNotFoundException {
+        Optional<UserEntity> user = this.repository.findByEmail(email);
+        if (user.isPresent()) return user;
+
+        throw new UserNotFoundException("User not found");
     }
 
     @Override
-    public UserEntity findByUsername(String username) throws UsernameNotFoundException {
-        return this.repository.findByUsername(username);
+    public Optional<UserEntity> findByUsername(String username) throws UsernameNotFoundException {
+        Optional<UserEntity> user = this.repository.findByUsername(username);
+        if (user.isPresent()) return user;
+
+        throw new UsernameNotFoundException("Username not found");
     }
 
     @Override
     public void register(UserDTO dto) throws EmailValidationException {
 
-        if (validateEmail(dto.getEmail())) {
-            if (!userExistsByEmail(dto.getEmail())) {
+        if (this.validationComponent.validateEmail(dto.getEmail())) {
+            if (!this.validationComponent.userExistsByEmail(dto.getEmail())) {
+                // Saving user with builder
                 this.repository.save(
                         UserEntity.builder()
                                 .setEmail(dto.getEmail())
@@ -75,15 +90,5 @@ public class UserService implements UserServiceInterface {
         Logger.getLogger("registerUser").info("User isn't registered");
 
         throw new EmailValidationException("Email validation failed");
-    }
-
-    private boolean validateEmail(String email) {
-        // Got this pattern from : https://www.baeldung.com/java-email-validation-regex
-        //final String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9\\\\+_-]+(\\\\.[A-Za-z0-9\\\\+_-]+)*@" + "[^-][A-Za-z0-9\\\\+-]+(\\\\.[A-Za-z0-9\\\\+-]+)*(\\\\.[A-Za-z]{2,})$";
-        return EmailValidator.getInstance().isValid(email);
-    }
-
-    private boolean userExistsByEmail(String email) {
-        return this.findByEmail(email) != null;
     }
 }

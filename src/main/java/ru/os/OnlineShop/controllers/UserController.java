@@ -1,23 +1,23 @@
-package ru.wm.WorkManager.controllers;
+package ru.os.OnlineShop.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import ru.wm.WorkManager.dto.UserDTO;
-import ru.wm.WorkManager.entities.UserEntity;
-import ru.wm.WorkManager.exceptions.EmailValidationException;
-import ru.wm.WorkManager.exceptions.UserNotFoundException;
-import ru.wm.WorkManager.services.UserService;
+import ru.os.OnlineShop.entities.UserEntity;
+import ru.os.OnlineShop.dto.UserDTO;
+import ru.os.OnlineShop.exceptions.EmailValidationException;
+import ru.os.OnlineShop.exceptions.UserNotFoundException;
+import ru.os.OnlineShop.services.UserService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Slf4j
 public class UserController {
-    //TODO("User controller mappings")
     @Autowired
     private UserService service;
 
@@ -36,9 +36,17 @@ public class UserController {
             params = "id",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Optional<UserEntity> getById(@RequestParam(name = "id") Long id) {
-        //TODO(ResponseEntity)
-        return this.service.findById(id);
+    public ResponseEntity<?> getById(@RequestParam(name = "id") Long id) {
+        try {
+            UserEntity user = this.service.findById(id);
+            return new ResponseEntity<>(
+                    user, HttpStatus.OK
+            );
+        } catch (UserNotFoundException ex) {
+            return new ResponseEntity<>(
+                    ex, HttpStatus.NOT_FOUND
+            );
+        }
     }
 
 
@@ -47,14 +55,17 @@ public class UserController {
             params = "username",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public UserEntity findByUsername(@RequestParam(name = "username") String username) {
+    public ResponseEntity<?> getByUsername(@RequestParam(name = "username") String username) {
         try {
-            //TODO(ResponseEntity)
-            return this.service.findByUsername(username);
+            UserEntity user = this.service.findByUsername(username);
+            return new ResponseEntity<>(
+                    user, HttpStatus.OK
+            );
         } catch (UsernameNotFoundException ex) {
-            ex.printStackTrace();
+            return new ResponseEntity<>(
+                    ex, HttpStatus.OK
+            );
         }
-
     }
 
 
@@ -63,14 +74,17 @@ public class UserController {
             params = "email",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public UserEntity findByEmail(@RequestParam(name = "email") String email) {
+   public ResponseEntity<?> getByEmail(@RequestParam(name = "email") String email) {
         try {
-            //TODO(ResponseEntity)
-            return this.service.findByEmail(email);
+            UserEntity user = this.service.findByEmail(email);
+            return new ResponseEntity<>(
+                    user, HttpStatus.OK
+            );
         } catch (UserNotFoundException ex) {
-            ex.printStackTrace();
+            return new ResponseEntity<>(
+                    ex, HttpStatus.NOT_FOUND
+            );
         }
-
     }
 
 

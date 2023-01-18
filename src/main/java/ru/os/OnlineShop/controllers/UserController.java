@@ -3,10 +3,12 @@ package ru.wm.WorkManager.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.wm.WorkManager.dto.UserDTO;
 import ru.wm.WorkManager.entities.UserEntity;
 import ru.wm.WorkManager.exceptions.EmailValidationException;
+import ru.wm.WorkManager.exceptions.UserNotFoundException;
 import ru.wm.WorkManager.services.UserService;
 
 import java.util.List;
@@ -35,6 +37,7 @@ public class UserController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public Optional<UserEntity> getById(@RequestParam(name = "id") Long id) {
+        //TODO(ResponseEntity)
         return this.service.findById(id);
     }
 
@@ -45,7 +48,13 @@ public class UserController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public UserEntity findByUsername(@RequestParam(name = "username") String username) {
-        return this.service.findByUsername(username);
+        try {
+            //TODO(ResponseEntity)
+            return this.service.findByUsername(username);
+        } catch (UsernameNotFoundException ex) {
+            ex.printStackTrace();
+        }
+
     }
 
 
@@ -55,7 +64,13 @@ public class UserController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public UserEntity findByEmail(@RequestParam(name = "email") String email) {
-        return this.service.findByEmail(email);
+        try {
+            //TODO(ResponseEntity)
+            return this.service.findByEmail(email);
+        } catch (UserNotFoundException ex) {
+            ex.printStackTrace();
+        }
+
     }
 
 

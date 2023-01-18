@@ -1,21 +1,20 @@
-package ru.wm.WorkManager.services;
+package ru.os.OnlineShop.services;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.wm.WorkManager.dto.UserDTO;
-import ru.wm.WorkManager.entities.RoleEntity;
-import ru.wm.WorkManager.entities.UserEntity;
-import ru.wm.WorkManager.exceptions.EmailValidationException;
-import ru.wm.WorkManager.exceptions.UserNotFoundException;
-import ru.wm.WorkManager.repositories.UserRepository;
-import ru.wm.WorkManager.services.interfaces.UserServiceInterface;
-import ru.wm.WorkManager.utils.DateProvider;
-import ru.wm.WorkManager.utils.ValidationComponent;
+import ru.os.OnlineShop.dto.UserDTO;
+import ru.os.OnlineShop.entities.RoleEntity;
+import ru.os.OnlineShop.entities.UserEntity;
+import ru.os.OnlineShop.exceptions.EmailValidationException;
+import ru.os.OnlineShop.exceptions.UserNotFoundException;
+import ru.os.OnlineShop.repositories.UserRepository;
+import ru.os.OnlineShop.services.interfaces.UserServiceInterface;
+import ru.os.OnlineShop.utils.DateProvider;
+import ru.os.OnlineShop.utils.ValidationComponent;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,11 +38,10 @@ public class UserService implements UserServiceInterface {
     private ValidationComponent validationComponent;
 
     @Override
-    public Optional<UserEntity> findById(Long id) throws UserNotFoundException {
-        Optional<UserEntity> user = this.repository.findById(id);
-        if (user.isPresent()) return user;
-
-        throw new UserNotFoundException("User not found");
+    public UserEntity findById(Long id) throws UserNotFoundException {
+        return this.repository.findById(id).orElseThrow(
+                () -> new UsernameNotFoundException("User with id " + id + " not found")
+        );
     }
 
     @Override
@@ -52,19 +50,17 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public Optional<UserEntity> findByEmail(String email) throws UserNotFoundException {
-        Optional<UserEntity> user = this.repository.findByEmail(email);
-        if (user.isPresent()) return user;
-
-        throw new UserNotFoundException("User not found");
+    public UserEntity findByEmail(String email) throws UserNotFoundException {
+        return this.repository.findByEmail(email).orElseThrow(
+                () -> new UsernameNotFoundException("User with email " + email + " not found")
+        );
     }
 
     @Override
-    public Optional<UserEntity> findByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserEntity> user = this.repository.findByUsername(username);
-        if (user.isPresent()) return user;
-
-        throw new UsernameNotFoundException("Username not found");
+    public UserEntity findByUsername(String username) throws UsernameNotFoundException {
+        return this.repository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException("User with username " + username + " not found")
+        );
     }
 
     @Override

@@ -1,14 +1,13 @@
-package ru.wm.WorkManager.services.interfaces;
+package ru.os.OnlineShop.services.interfaces;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import ru.wm.WorkManager.dto.UserDTO;
-import ru.wm.WorkManager.entities.UserEntity;
-import ru.wm.WorkManager.exceptions.EmailValidationException;
-import ru.wm.WorkManager.exceptions.UserNotFoundException;
+import ru.os.OnlineShop.entities.UserEntity;
+import ru.os.OnlineShop.exceptions.EmailValidationException;
+import ru.os.OnlineShop.exceptions.UserNotFoundException;
+import ru.os.OnlineShop.dto.UserDTO;
 
 import java.util.List;
 import java.util.Optional;
-
 
 /*
 * @author ZQR0
@@ -17,9 +16,9 @@ import java.util.Optional;
 * This interface contains all method to implement in UserService.java
 */
 public interface UserServiceInterface {
-    Optional<UserEntity> findById(Long id) throws UserNotFoundException;
+    UserEntity findById(Long id) throws UserNotFoundException;
     List<UserEntity> getAllUsers();
     void register(UserDTO dto) throws EmailValidationException;
-    Optional<UserEntity> findByEmail(String email) throws UserNotFoundException;
-    Optional<UserEntity> findByUsername(String username) throws UsernameNotFoundException;
+    UserEntity findByEmail(String email) throws UserNotFoundException;
+    UserEntity findByUsername(String username) throws UsernameNotFoundException;
 }

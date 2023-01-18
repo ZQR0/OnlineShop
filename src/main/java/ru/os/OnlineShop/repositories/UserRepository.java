@@ -1,7 +1,7 @@
-package ru.wm.WorkManager.repositories;
+package ru.os.OnlineShop.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.wm.WorkManager.entities.UserEntity;
+import ru.os.OnlineShop.entities.UserEntity;
 
 import java.util.Optional;
 

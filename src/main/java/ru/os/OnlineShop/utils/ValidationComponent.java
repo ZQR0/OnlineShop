@@ -1,10 +1,10 @@
-package ru.wm.WorkManager.utils;
+package ru.os.OnlineShop.utils;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.wm.WorkManager.exceptions.UserNotFoundException;
-import ru.wm.WorkManager.services.UserService;
+import ru.os.OnlineShop.exceptions.UserNotFoundException;
+import ru.os.OnlineShop.services.UserService;
 
 /*
 * @author ZQR0
@@ -27,7 +27,7 @@ public class ValidationComponent {
     // This method checks is user already exists by email address
     public boolean userExistsByEmail(String email)  {
         try {
-            return this.service.findByEmail(email).isPresent();
+            return this.service.findByEmail(email) != null;
         } catch (UserNotFoundException ex) {
             ex.printStackTrace();
             return false;

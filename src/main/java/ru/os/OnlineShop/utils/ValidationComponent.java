@@ -4,6 +4,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.os.OnlineShop.exceptions.UserNotFoundException;
+import ru.os.OnlineShop.repositories.UserRepository;
 import ru.os.OnlineShop.services.UserService;
 
 /*
@@ -15,7 +16,7 @@ import ru.os.OnlineShop.services.UserService;
 public class ValidationComponent {
 
     @Autowired
-    private UserService service;
+    private UserRepository repository;
 
     // Here we could use regex and pattern, but I found EmailValidator dep
     public boolean validateEmail(String email) {
@@ -26,11 +27,6 @@ public class ValidationComponent {
 
     // This method checks is user already exists by email address
     public boolean userExistsByEmail(String email)  {
-        try {
-            return this.service.findByEmail(email) != null;
-        } catch (UserNotFoundException ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return this.repository.findByEmail(email).isPresent();
     }
 }

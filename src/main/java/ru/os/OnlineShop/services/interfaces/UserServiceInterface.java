@@ -18,7 +18,6 @@ import java.util.Optional;
 public interface UserServiceInterface {
     UserEntity findById(Long id) throws UserNotFoundException;
     List<UserEntity> getAllUsers();
-    void register(UserDTO dto) throws EmailValidationException;
     UserEntity findByEmail(String email) throws UserNotFoundException;
     UserEntity findByUsername(String username) throws UsernameNotFoundException;
 }

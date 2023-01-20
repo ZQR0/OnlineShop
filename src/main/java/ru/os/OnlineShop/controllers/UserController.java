@@ -63,7 +63,7 @@ public class UserController {
             );
         } catch (UsernameNotFoundException ex) {
             return new ResponseEntity<>(
-                    ex, HttpStatus.OK
+                    ex, HttpStatus.NOT_FOUND
             );
         }
     }

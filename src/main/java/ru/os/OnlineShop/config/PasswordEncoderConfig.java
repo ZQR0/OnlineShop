@@ -1,4 +1,4 @@
-package ru.wm.WorkManager.config;
+package ru.os.OnlineShop.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -14,10 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class PasswordEncoderConfig {
-
-    /*
-    * @method
-    */
     @Bean(name = "bcrypt_bean")
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

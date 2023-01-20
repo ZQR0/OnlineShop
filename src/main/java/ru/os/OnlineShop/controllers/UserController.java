@@ -7,10 +7,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import ru.os.OnlineShop.entities.UserEntity;
 import ru.os.OnlineShop.dto.UserDTO;
+import ru.os.OnlineShop.entities.UserEntity;
 import ru.os.OnlineShop.exceptions.EmailValidationException;
 import ru.os.OnlineShop.exceptions.UserNotFoundException;
+import ru.os.OnlineShop.services.RegistrationService;
 import ru.os.OnlineShop.services.UserService;
 
 import java.util.List;
@@ -19,15 +20,17 @@ import java.util.List;
 @Slf4j
 public class UserController {
     @Autowired
-    private UserService service;
+    private UserService userService;
 
+    @Autowired
+    private RegistrationService registrationService;
 
     @GetMapping(
             path = "api/user/get-all-users",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public List<UserEntity> getAllUsers() {
-        return this.service.getAllUsers();
+        return this.userService.getAllUsers();
     }
 
 
@@ -38,7 +41,7 @@ public class UserController {
     )
     public ResponseEntity<?> getById(@RequestParam(name = "id") Long id) {
         try {
-            UserEntity user = this.service.findById(id);
+            UserEntity user = this.userService.findById(id);
             return new ResponseEntity<>(
                     user, HttpStatus.OK
             );
@@ -57,7 +60,7 @@ public class UserController {
     )
     public ResponseEntity<?> getByUsername(@RequestParam(name = "username") String username) {
         try {
-            UserEntity user = this.service.findByUsername(username);
+            UserEntity user = this.userService.findByUsername(username);
             return new ResponseEntity<>(
                     user, HttpStatus.OK
             );
@@ -76,13 +79,33 @@ public class UserController {
     )
    public ResponseEntity<?> getByEmail(@RequestParam(name = "email") String email) {
         try {
-            UserEntity user = this.service.findByEmail(email);
+            UserEntity user = this.userService.findByEmail(email);
             return new ResponseEntity<>(
                     user, HttpStatus.OK
             );
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(
                     ex, HttpStatus.NOT_FOUND
+            );
+        }
+    }
+
+    @RequestMapping(
+            path = "api/user/sign-up",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<?> signUpUser(UserDTO dto) {
+        try {
+            this.registrationService.register(dto);
+
+            return new ResponseEntity<>(
+                    "Successfully signed up", HttpStatus.OK
+            );
+        } catch (EmailValidationException ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(
+                    ex, HttpStatus.FORBIDDEN
             );
         }
     }

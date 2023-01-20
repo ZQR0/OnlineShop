@@ -1,4 +1,4 @@
-package ru.wm.WorkManager.exceptions;
+package ru.os.OnlineShop.exceptions;
 
 import com.google.gson.Gson;
 

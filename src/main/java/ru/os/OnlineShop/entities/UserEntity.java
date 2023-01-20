@@ -1,4 +1,4 @@
-package ru.wm.WorkManager.entities;
+package ru.os.OnlineShop.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package ru.wm.WorkManager.utils;
+package ru.os.OnlineShop.utils;
 
 import org.springframework.stereotype.Component;
 

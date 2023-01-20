@@ -1,4 +1,4 @@
-package ru.wm.WorkManager.entities;
+package ru.os.OnlineShop.entities;
 
 public enum RoleEntity {
     ADMIN("ADMIN"),

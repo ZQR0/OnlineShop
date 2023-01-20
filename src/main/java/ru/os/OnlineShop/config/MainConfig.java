@@ -1,4 +1,4 @@
-package ru.wm.WorkManager.config;
+package ru.os.OnlineShop.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

@@ -87,18 +87,4 @@ public class UserController {
         }
     }
 
-
-    @PostMapping(
-            path = "api/user/register/",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-    public void registerUser(@RequestBody UserDTO dto) {
-        try {
-            this.service.register(dto);
-        } catch (EmailValidationException ex) {
-            ex.printStackTrace();
-        }
-    }
-
 }

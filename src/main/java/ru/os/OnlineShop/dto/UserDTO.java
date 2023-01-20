@@ -1,4 +1,4 @@
-package ru.wm.WorkManager.dto;
+package ru.os.OnlineShop.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

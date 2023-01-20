@@ -1,4 +1,4 @@
-package ru.wm.WorkManager.entities;
+package ru.os.OnlineShop.entities;
 
 import jakarta.persistence.*;
 import net.minidev.json.annotate.JsonIgnore;

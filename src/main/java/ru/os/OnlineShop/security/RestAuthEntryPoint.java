@@ -1,4 +1,4 @@
-package ru.wm.WorkManager.security;
+package ru.os.OnlineShop.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

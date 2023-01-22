@@ -3,7 +3,7 @@ package ru.os.OnlineShop.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
 
 /*
 * @author ZQR0
@@ -12,7 +12,7 @@ import java.util.Date;
 * We use Lombok @Data here to create Getters/Setters for fields
 */
 @Data
-public class UserDTO {
+public class UserDTO implements Serializable {
     @JsonProperty("email")
     private String email;
     @JsonProperty("username")

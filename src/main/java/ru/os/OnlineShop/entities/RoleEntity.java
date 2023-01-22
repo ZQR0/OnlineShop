@@ -5,7 +5,7 @@ public enum RoleEntity {
     USER("USER"),
     BANNED("BANNED");
 
-    private String _roleName;
+    private final String _roleName;
 
     RoleEntity(String roleName) {
         this._roleName = roleName;

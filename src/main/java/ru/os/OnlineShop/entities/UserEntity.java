@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -43,7 +44,7 @@ public class UserEntity implements UserDetails {
     @Setter
     private String username;
 
-    @Column(name = "password", unique = true, nullable = false)
+    @Column(name = "password", nullable = false, unique = false)
     @Getter
     @Setter
     private String password;
@@ -53,16 +54,18 @@ public class UserEntity implements UserDetails {
     @Setter
     private Boolean isEnabled = true;
 
-    @Column(name = "register_time", nullable = false)
     @Getter
     @Setter
+    @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "register_time", nullable = false, unique = false)
     private Date registerTime;
 
-    @Column(name = "role", nullable = false)
     @Getter
     @Setter
-    private String role;
+    @Column(name = "role", nullable = false)
+    private String role = RoleEntity.USER.getRoleName();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
@@ -76,11 +79,13 @@ public class UserEntity implements UserDetails {
     // Constructor
     public UserEntity() {}
 
-    public UserEntity(String email, String username, String password, Date registerTime) {
+    public UserEntity(String email, String username, String password, Date registerTime, String role, Boolean isEnabled) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.registerTime = registerTime;
+        this.role = role;
+        this.isEnabled = isEnabled;
     }
 
 
@@ -121,14 +126,14 @@ public class UserEntity implements UserDetails {
     /*
     * Builder pattern using for this class
     * We have a lot of params in constructor, which is not good
-    * So, we can just create a builder and user it like Java Streams API
+    * So, we can just create a builder and use it like Java Streams API
     */
     public static class UserBuilder {
         private String _email;
         private String _username;
         private String _password;
         private Date _registerTime;
-        private String role;
+        private String _role;
         private Boolean _isEnabled;
 
         public UserBuilder setEmail(String email) {
@@ -152,7 +157,7 @@ public class UserEntity implements UserDetails {
         }
 
         public UserBuilder role(String role) {
-            this.role = role;
+            this._role = role;
             return this;
         }
 
@@ -162,7 +167,7 @@ public class UserEntity implements UserDetails {
         }
 
         public UserEntity build() {
-            return new UserEntity(_email, _username, _password, _registerTime);
+            return new UserEntity(_email, _username, _password, _registerTime, _role, _isEnabled);
         }
 
     }

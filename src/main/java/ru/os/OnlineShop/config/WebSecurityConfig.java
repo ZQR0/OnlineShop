@@ -18,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.security.RestAuthEntryPoint;
 
+import java.util.logging.Logger;
+
 /*
 * @author ZQR0
 * @since 14.01.2023
@@ -60,6 +62,8 @@ public class WebSecurityConfig {
         // Disabling CSRF
         http.csrf().disable();
 
+        Logger.getLogger("Web Security Logger").info("Security works");
+
         return http.build();
     }
 
@@ -87,6 +91,8 @@ public class WebSecurityConfig {
                 .password("banned12")
                 .roles(RoleEntity.BANNED.getRoleName())
                 .build();
+
+        Logger.getLogger("In memory authorized fake-users").info("Created");
 
         return new InMemoryUserDetailsManager(user, admin, bannedUser);
     }

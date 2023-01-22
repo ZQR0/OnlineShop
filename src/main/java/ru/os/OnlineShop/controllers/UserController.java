@@ -1,15 +1,17 @@
 package ru.os.OnlineShop.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import ru.os.OnlineShop.controllers.models.UserRequestModel;
 import ru.os.OnlineShop.dto.UserDTO;
 import ru.os.OnlineShop.entities.UserEntity;
-import ru.os.OnlineShop.exceptions.EmailValidationException;
+import ru.os.OnlineShop.exceptions.UserAlreadyExistsException;
 import ru.os.OnlineShop.exceptions.UserNotFoundException;
 import ru.os.OnlineShop.services.RegistrationService;
 import ru.os.OnlineShop.services.UserService;
@@ -24,6 +26,9 @@ public class UserController {
 
     @Autowired
     private RegistrationService registrationService;
+
+    @Autowired
+    private ModelMapper mapper;
 
     @GetMapping(
             path = "api/user/get-all-users",
@@ -47,7 +52,7 @@ public class UserController {
             );
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(
-                    ex, HttpStatus.NOT_FOUND
+                    "User not found", HttpStatus.NOT_FOUND
             );
         }
     }
@@ -66,7 +71,7 @@ public class UserController {
             );
         } catch (UsernameNotFoundException ex) {
             return new ResponseEntity<>(
-                    ex, HttpStatus.NOT_FOUND
+                    "User not found", HttpStatus.NOT_FOUND
             );
         }
     }
@@ -85,7 +90,7 @@ public class UserController {
             );
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(
-                    ex, HttpStatus.NOT_FOUND
+                    "User not found", HttpStatus.NOT_FOUND
             );
         }
     }
@@ -95,17 +100,17 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<?> signUpUser(UserDTO dto) {
+    public ResponseEntity<?> signUpUser(@RequestBody UserRequestModel requestModel) {
         try {
+            UserDTO dto = this.mapper.map(requestModel, UserDTO.class);
             this.registrationService.register(dto);
 
             return new ResponseEntity<>(
                     "Successfully signed up", HttpStatus.OK
             );
-        } catch (EmailValidationException ex) {
-            ex.printStackTrace();
+        } catch (UserAlreadyExistsException ex) {
             return new ResponseEntity<>(
-                    ex, HttpStatus.FORBIDDEN
+                    "User already exists", HttpStatus.FORBIDDEN
             );
         }
     }

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.os.OnlineShop.entities.UserEntity;
 import ru.os.OnlineShop.exceptions.UserNotFoundException;
 import ru.os.OnlineShop.repositories.UserRepository;
@@ -17,7 +16,6 @@ import java.util.List;
 
 @Service
 @Slf4j
-@Transactional
 public class UserService implements UserServiceInterface {
 
     @Autowired
@@ -35,7 +33,7 @@ public class UserService implements UserServiceInterface {
     @Override
     public UserEntity findById(Long id) throws UserNotFoundException {
         return this.repository.findById(id).orElseThrow(
-                () -> new UsernameNotFoundException("User with id " + id + " not found")
+                () -> new UserNotFoundException("User with id " + id + " not found")
         );
     }
 

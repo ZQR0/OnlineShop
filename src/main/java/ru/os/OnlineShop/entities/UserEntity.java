@@ -129,6 +129,7 @@ public class UserEntity implements UserDetails {
         private String _password;
         private Date _registerTime;
         private String role;
+        private Boolean _isEnabled;
 
         public UserBuilder setEmail(String email) {
             this._email = email;
@@ -152,6 +153,11 @@ public class UserEntity implements UserDetails {
 
         public UserBuilder role(String role) {
             this.role = role;
+            return this;
+        }
+
+        public UserBuilder isEnabled(Boolean isEnabled) {
+            this._isEnabled = isEnabled;
             return this;
         }
 

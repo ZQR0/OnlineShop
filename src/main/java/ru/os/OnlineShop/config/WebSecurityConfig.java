@@ -92,7 +92,7 @@ public class WebSecurityConfig {
                 .roles(RoleEntity.BANNED.getRoleName())
                 .build();
 
-        Logger.getLogger("In memory authorized fake-users").info("Created");
+        Logger.getLogger("In memory authorized fake-users").info("In memory users сreated");
 
         return new InMemoryUserDetailsManager(user, admin, bannedUser);
     }

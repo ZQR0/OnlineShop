@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.os.OnlineShop.dto.UserDTO;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.entities.UserEntity;
+import ru.os.OnlineShop.exceptions.EmailValidationException;
 import ru.os.OnlineShop.exceptions.UserAlreadyExistsException;
 import ru.os.OnlineShop.repositories.UserRepository;
 import ru.os.OnlineShop.utils.DateProvider;
@@ -35,30 +36,37 @@ public class RegistrationService {
     private PasswordEncoder passwordEncoder;
 
 
-    public void register(UserDTO dto) throws UserAlreadyExistsException {
+    // Can throw 2 exceptions
+    public void register(UserDTO dto) throws UserAlreadyExistsException, EmailValidationException {
 
         // UserDTO - source class
         // UserEntity - destination class
         UserEntity user = this.mapper.map(dto, UserEntity.class);
 
         boolean userExists = this.validationComponent.userExistsByEmail(dto.getEmail());
+        boolean emailIsValid = this.validationComponent.validateEmail(dto.getEmail());
 
         if (!userExists) {
-            // Saving user with builder
-            user.builder()
-                    .setEmail(dto.getEmail())
-                    .setUsername(dto.getUsername())
-                    .setPassword(dto.getPassword())
-                    .date(this.dateProvider.now())
-                    .role(RoleEntity.USER.getRoleName())// TODO: Role definition
-                    .isEnabled(true)
-                    .build();
+            if (emailIsValid) {
+                // Saving user with builder
+                user.builder()
+                        .setEmail(dto.getEmail())
+                        .setUsername(dto.getUsername())
+                        .setPassword(dto.getPassword())
+                        .date(this.dateProvider.now())
+                        .role(RoleEntity.USER.getRoleName())// TODO: Role definition
+                        .isEnabled(true)
+                        .build();
 
-            this.repository.save(user);
+                this.repository.save(user);
 
-            Logger.getLogger("User registration").info("User is registered");
+                Logger.getLogger("User registration").info("User is registered (Successfully)");
+            } else {
+                Logger.getLogger("User registration").info("User isn't registered (email validation failed)");
+                throw new EmailValidationException("Email validation failed");
+            }
         } else {
-            Logger.getLogger("User registration").info("User isn't registered");
+            Logger.getLogger("User registration").info("User isn't registered (already exists)");
             throw new UserAlreadyExistsException("User already exists");
         }
     }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.os.OnlineShop.controllers.models.UserRequestModel;
 import ru.os.OnlineShop.dto.UserDTO;
 import ru.os.OnlineShop.entities.UserEntity;
+import ru.os.OnlineShop.exceptions.EmailValidationException;
 import ru.os.OnlineShop.exceptions.UserAlreadyExistsException;
 import ru.os.OnlineShop.exceptions.UserNotFoundException;
 import ru.os.OnlineShop.services.RegistrationService;
@@ -110,7 +111,11 @@ public class UserController {
             );
         } catch (UserAlreadyExistsException ex) {
             return new ResponseEntity<>(
-                    "User already exists", HttpStatus.FORBIDDEN
+                    "User already exists", HttpStatus.BAD_REQUEST
+            );
+        } catch (EmailValidationException ex) {
+            return new ResponseEntity<>(
+                    "Email validation failed", HttpStatus.BAD_REQUEST
             );
         }
     }

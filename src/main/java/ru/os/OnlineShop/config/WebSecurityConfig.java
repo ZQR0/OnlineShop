@@ -17,6 +17,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.security.RestAuthEntryPoint;
+import ru.os.OnlineShop.utils.URLAddressesContainer;
 
 import java.util.logging.Logger;
 
@@ -33,17 +34,6 @@ public class WebSecurityConfig {
     @Autowired
     private RestAuthEntryPoint restAuthEntryPoint;
 
-    @Value(value = "${url.api.default}")
-    private String defaultAPI_URL;
-
-    @Value(value = "${url.api.admin.default}")
-    private String defaultAdminURL;
-
-    @Value(value = "${url.api.advanced}")
-    private String adminAdvanced_URL;
-
-    @Value(value = "${url.api.advanced}")
-    private String advanced_API_URl;
 
     @Bean(name = "security_bean")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -53,10 +43,10 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(restAuthEntryPoint).and()
                         .authorizeHttpRequests(
                                 (auth) -> auth
-                                        .requestMatchers(defaultAPI_URL).permitAll()
-                                        .requestMatchers(adminAdvanced_URL).hasRole(RoleEntity.ADMIN.getRoleName())
-                                        .requestMatchers(defaultAdminURL).hasRole(RoleEntity.ADMIN.getRoleName())
-                                        .requestMatchers(advanced_API_URl).permitAll()
+                                        .requestMatchers(URLAddressesContainer.defaultAPI_URL).permitAll()
+                                        .requestMatchers(URLAddressesContainer.adminAdvanced_URL).hasRole(RoleEntity.ADMIN.getRoleName())
+                                        .requestMatchers(URLAddressesContainer.defaultAdminURL).hasRole(RoleEntity.ADMIN.getRoleName())
+                                        .requestMatchers(URLAddressesContainer.advanced_API_URl).permitAll()
                         );
 
         // Disabling CSRF

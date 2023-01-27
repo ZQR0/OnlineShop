@@ -44,6 +44,9 @@ dependencies {
 	implementation group: 'commons-validator', name: 'commons-validator', version: '1.7'
 	// GSON Google dep for gradle
 	implementation 'com.google.code.gson:gson:2.10.1'
+	// https://mvnrepository.com/artifact/org.springframework.session/spring-session-jdbc
+	implementation group: 'org.springframework.session', name: 'spring-session-jdbc', version: '3.0.0'
+
 }
 
 tasks.named('test') {

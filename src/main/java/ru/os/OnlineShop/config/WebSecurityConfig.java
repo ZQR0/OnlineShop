@@ -37,20 +37,31 @@ public class WebSecurityConfig {
 
     @Bean(name = "security_bean")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        //TODO: Create .env file and contain all constant values in there
+        // TODO: Refactor all code
         http
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .exceptionHandling().authenticationEntryPoint(restAuthEntryPoint).and()
-                        .authorizeHttpRequests(
-                                (auth) -> auth
-                                        .requestMatchers(URLAddressesContainer.defaultAPI_URL).permitAll()
-                                        .requestMatchers(URLAddressesContainer.adminAdvanced_URL).hasRole(RoleEntity.ADMIN.getRoleName())
-                                        .requestMatchers(URLAddressesContainer.defaultAdminURL).hasRole(RoleEntity.ADMIN.getRoleName())
-                                        .requestMatchers(URLAddressesContainer.advanced_API_URl).permitAll()
-                        );
+                .csrf().disable()
 
-        // Disabling CSRF
-        http.csrf().disable();
+                .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint).and()
+
+                .formLogin().defaultSuccessUrl("/home", true)
+                .loginPage("/login")
+                .and()
+                .logout(logout -> logout.deleteCookies("SETSOMECOOKIES").invalidateHttpSession(true))
+
+                .authorizeHttpRequests(
+                        (auth) -> auth
+                                .requestMatchers(URLAddressesContainer.defaultAPI_URL).permitAll()
+                                .requestMatchers(URLAddressesContainer.adminAdvanced_URL).hasRole(RoleEntity.ADMIN.getRoleName())
+                                .requestMatchers(URLAddressesContainer.defaultAdminURL).hasRole(RoleEntity.ADMIN.getRoleName())
+                                .requestMatchers(URLAddressesContainer.advanced_API_URl).permitAll()
+                                .anyRequest().authenticated()
+                )
+
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                .invalidSessionUrl("/logout")
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(false);
+
 
         Logger.getLogger("Web Security Logger").info("Security works");
 

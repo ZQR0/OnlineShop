@@ -1,7 +1,9 @@
 package ru.os.OnlineShop.utils;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 
+@PropertySource("classpath:urls.properties")
 public class URLAddressesContainer {
 
     @Value(value = "${url.api.default}")

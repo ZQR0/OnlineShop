@@ -1,4 +1,4 @@
-package ru.wm.WorkManager;
+package ru.os.OnlineShop;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -2,14 +2,7 @@
 
 name: Java CI with Gradle (by GitHub)
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
-permissions:
-  contents: read
+on: [push]
 
 jobs:
   build:

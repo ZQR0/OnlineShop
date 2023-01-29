@@ -1,10 +1,8 @@
 package ru.os.OnlineShop.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,8 +13,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.security.RestAuthEntryPoint;
+import ru.os.OnlineShop.security.filters.CookieAuthFilter;
 import ru.os.OnlineShop.utils.URLAddressesContainer;
 
 import java.util.logging.Logger;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 */
 @Configuration
 @EnableWebSecurity
-@PropertySource("classpath:urls.properties")
+//@PropertySource("classpath:urls.properties")
 public class WebSecurityConfig {
 
     @Autowired
@@ -41,12 +41,14 @@ public class WebSecurityConfig {
         http
                 .csrf().disable()
 
-                .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint).and()
+                .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint)
+                .and()
+                .addFilterBefore(new CookieAuthFilter(), BasicAuthenticationFilter.class)
 
                 .formLogin().defaultSuccessUrl("/home", true)
                 .loginPage("/login")
                 .and()
-                .logout(logout -> logout.deleteCookies("SETSOMECOOKIES").invalidateHttpSession(true))
+                .logout(logout -> logout.deleteCookies(CookieAuthFilter.COOKIE_NAME).invalidateHttpSession(true))
 
                 .authorizeHttpRequests(
                         (auth) -> auth
@@ -57,7 +59,7 @@ public class WebSecurityConfig {
                                 .anyRequest().authenticated()
                 )
 
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .invalidSessionUrl("/logout")
                 .maximumSessions(1)
                 .maxSessionsPreventsLogin(false);
@@ -68,7 +70,7 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @Bean(name = "auth_bean")
+    @Bean(name = "auth_manager_bean")
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }

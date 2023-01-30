@@ -6,7 +6,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -31,8 +29,7 @@ import java.util.stream.Stream;
 @PropertySource("classpath:application.properties")
 public class CookieAuthFilter extends OncePerRequestFilter {
 
-    @Value(value = "${cookie.cookie-name}")
-    public static String COOKIE_NAME;
+    public final static String COOKIE_NAME = "SESSION_COOKIE_AUTH";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

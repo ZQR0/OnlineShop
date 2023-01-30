@@ -14,9 +14,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.security.RestAuthEntryPoint;
 import ru.os.OnlineShop.security.filters.CookieAuthFilter;
+import ru.os.OnlineShop.security.filters.EmailPasswordAuthFilter;
 import ru.os.OnlineShop.utils.URLAddressesContainer;
 
 import java.util.logging.Logger;
@@ -34,6 +36,9 @@ public class WebSecurityConfig {
     @Autowired
     private RestAuthEntryPoint restAuthEntryPoint;
 
+    @Autowired
+    private URLAddressesContainer container;
+
 
     @Bean(name = "security_bean")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -41,33 +46,37 @@ public class WebSecurityConfig {
         http
                 .csrf().disable()
 
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .invalidSessionUrl("/logout")
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                )
+                .addFilterBefore(new EmailPasswordAuthFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new CookieAuthFilter(), EmailPasswordAuthFilter.class)
                 .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint)
-                .and()
-                .addFilterBefore(new CookieAuthFilter(), BasicAuthenticationFilter.class)
-
-                .formLogin().defaultSuccessUrl("/home", true)
-                .loginPage("/login")
                 .and()
                 .logout(logout -> logout.deleteCookies(CookieAuthFilter.COOKIE_NAME).invalidateHttpSession(true))
 
                 .authorizeHttpRequests(
                         (auth) -> auth
-                                .requestMatchers(URLAddressesContainer.defaultAPI_URL).permitAll()
-                                .requestMatchers(URLAddressesContainer.adminAdvanced_URL).hasRole(RoleEntity.ADMIN.getRoleName())
-                                .requestMatchers(URLAddressesContainer.defaultAdminURL).hasRole(RoleEntity.ADMIN.getRoleName())
-                                .requestMatchers(URLAddressesContainer.advanced_API_URl).permitAll()
+                                .requestMatchers(container.defaultAPI_URL).permitAll()
+                                .requestMatchers(container.adminAdvanced_URL).hasRole(RoleEntity.ADMIN.getRoleName())
+                                .requestMatchers(container.defaultAdminURL).hasRole(RoleEntity.ADMIN.getRoleName())
+                                .requestMatchers(container.advanced_API_URl).permitAll()
+                                .requestMatchers(container.signInAuthUrl).permitAll()
                                 .anyRequest().authenticated()
-                )
-
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .invalidSessionUrl("/logout")
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(false);
-
+                );
 
         Logger.getLogger("Web Security Logger").info("Security works");
 
         return http.build();
+    }
+
+    // Added this to allow only one session in active
+    @Bean(name = "http_event_publisher_bean")
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 
     @Bean(name = "auth_manager_bean")

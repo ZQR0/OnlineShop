@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import ru.os.OnlineShop.controllers.handlers.HttpErrorHandler;
 import ru.os.OnlineShop.controllers.models.UserRequestModel;
 import ru.os.OnlineShop.dto.UserDTO;
 import ru.os.OnlineShop.entities.UserEntity;
@@ -53,7 +54,11 @@ public class UserController {
             );
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(
-                    "User not found", HttpStatus.NOT_FOUND
+                    new HttpErrorHandler(
+                            HttpStatus.NOT_FOUND.value(),
+                            "User with id " + id + " not found"
+                    ),
+                    HttpStatus.NOT_FOUND
             );
         }
     }
@@ -72,7 +77,11 @@ public class UserController {
             );
         } catch (UsernameNotFoundException ex) {
             return new ResponseEntity<>(
-                    "User not found", HttpStatus.NOT_FOUND
+                    new HttpErrorHandler(
+                            HttpStatus.NOT_FOUND.value(),
+                            "User with username " + username + " not found"
+                    ),
+                    HttpStatus.NOT_FOUND
             );
         }
     }
@@ -91,7 +100,11 @@ public class UserController {
             );
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(
-                    "User not found", HttpStatus.NOT_FOUND
+                    new HttpErrorHandler(
+                            HttpStatus.NOT_FOUND.value(),
+                            "User with email " + email + " not found"
+                    ),
+                    HttpStatus.NOT_FOUND
             );
         }
     }
@@ -111,11 +124,19 @@ public class UserController {
             );
         } catch (UserAlreadyExistsException ex) {
             return new ResponseEntity<>(
-                    "User already exists", HttpStatus.BAD_REQUEST
+                    new HttpErrorHandler(
+                            HttpStatus.BAD_REQUEST.value(),
+                            "User with this credentials already exists"
+                    ),
+                    HttpStatus.BAD_REQUEST
             );
         } catch (EmailValidationException ex) {
             return new ResponseEntity<>(
-                    "Email validation failed", HttpStatus.BAD_REQUEST
+                    new HttpErrorHandler(
+                            HttpStatus.BAD_REQUEST.value(),
+                            "Email validation failed"
+                    ),
+                    HttpStatus.BAD_REQUEST
             );
         }
     }

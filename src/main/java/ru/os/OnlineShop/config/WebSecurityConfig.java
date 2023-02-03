@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 /*
 * @author ZQR0
 * @since 14.01.2023
-* @version 0.0.2
 */
 @Configuration
 @EnableWebSecurity
@@ -40,24 +39,29 @@ public class WebSecurityConfig {
     private URLAddressesContainer container;
 
 
+    // Filter chain security config
     @Bean(name = "security_bean")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // TODO: Refactor all code
         http
+                // disabling CSRF-protection
                 .csrf().disable()
 
+                // Session management configuration
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .invalidSessionUrl("/logout")
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
                 )
+                // Filters for HTTP-request (Auth requests basically)
                 .addFilterBefore(new EmailPasswordAuthFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new CookieAuthFilter(), EmailPasswordAuthFilter.class)
                 .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint)
                 .and()
                 .logout(logout -> logout.deleteCookies(CookieAuthFilter.COOKIE_NAME).invalidateHttpSession(true))
 
+                // all allowed URL-addresses with their roles
                 .authorizeHttpRequests(
                         (auth) -> auth
                                 .requestMatchers(container.defaultAPI_URL).permitAll()
@@ -79,11 +83,16 @@ public class WebSecurityConfig {
         return new HttpSessionEventPublisher();
     }
 
+    // Getting auth-manager to make auth-functionality
     @Bean(name = "auth_manager_bean")
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
+    // In this method we create all
+    // in memory users
+    // For example, we contain ADMIN there
+    // TODO: Use .properties file to contain all logins/passwords in there
     @Bean(name = "in_memory_auth_bean")
     public UserDetailsService inMemoryAuthBean() {
         UserDetails user = User.builder()

@@ -95,11 +95,6 @@ public class UserEntity implements UserDetails {
         return this.authorities;
     }
 
-    // We are going to use email instead of username for authentication
-    @Override
-    public String getUsername() {
-        return this.getEmail();
-    }
 
     @JsonIgnore
     @Override

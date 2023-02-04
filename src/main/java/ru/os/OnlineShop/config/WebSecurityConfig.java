@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.security.RestAuthEntryPoint;
+import ru.os.OnlineShop.security.auth.CustomAuthenticationProvider;
 import ru.os.OnlineShop.security.filters.CookieAuthFilter;
 import ru.os.OnlineShop.security.filters.EmailPasswordAuthFilter;
 import ru.os.OnlineShop.utils.URLAddressesContainer;
@@ -37,6 +39,9 @@ public class WebSecurityConfig {
 
     @Autowired
     private URLAddressesContainer container;
+
+    @Autowired
+    private CustomAuthenticationProvider provider;
 
 
     // Filter chain security config
@@ -59,7 +64,9 @@ public class WebSecurityConfig {
                 .addFilterBefore(new CookieAuthFilter(), EmailPasswordAuthFilter.class)
                 .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint)
                 .and()
-                .logout(logout -> logout.deleteCookies(CookieAuthFilter.COOKIE_NAME).invalidateHttpSession(true))
+                .logout(logout -> logout.deleteCookies(CookieAuthFilter.COOKIE_NAME)
+                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true))
 
                 // all allowed URL-addresses with their roles
                 .authorizeHttpRequests(
@@ -85,8 +92,10 @@ public class WebSecurityConfig {
 
     // Getting auth-manager to make auth-functionality
     @Bean(name = "auth_manager_bean")
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        builder.authenticationProvider(this.provider);
+        return builder.build();
     }
 
     // In this method we create all

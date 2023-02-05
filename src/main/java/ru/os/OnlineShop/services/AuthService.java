@@ -48,4 +48,8 @@ public class AuthService implements AuthServiceInterface {
         SecurityContextHolder.clearContext();
     }
 
+    public String createCookieToken(AuthDTO dto) {
+        return dto.getEmail() + ":" + dto.getPassword();
+    }
+
 }

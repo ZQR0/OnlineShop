@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.os.OnlineShop.entities.UserEntity;
 import ru.os.OnlineShop.exceptions.UserNotFoundException;
+import ru.os.OnlineShop.repositories.UserRepository;
 
 import java.util.logging.Logger;
 
@@ -20,9 +21,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserService userService;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
-            UserEntity user = this.userService.findByEmail(username);
+            Logger.getLogger("CustomUserDetailsService Logger").info("Started to find by email");
+            UserEntity user = this.userService.findByEmail(email);
+            Logger.getLogger("CustomUserDetailsService Logger").info("User found by email");
+
+            Logger.getLogger("CustomUserDetailsService Logger").info("Authenticated");
 
             return new User(user.getEmail(), user.getPassword(), user.getAuthorities());
         } catch (UserNotFoundException ex) {

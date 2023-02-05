@@ -21,6 +21,7 @@ import ru.os.OnlineShop.security.RestAuthEntryPoint;
 import ru.os.OnlineShop.security.auth.CustomAuthenticationProvider;
 import ru.os.OnlineShop.security.filters.CookieAuthFilter;
 import ru.os.OnlineShop.security.filters.EmailPasswordAuthFilter;
+import ru.os.OnlineShop.services.CustomUserDetailsService;
 import ru.os.OnlineShop.utils.URLAddressesContainer;
 
 import java.util.logging.Logger;
@@ -42,6 +43,9 @@ public class WebSecurityConfig {
 
     @Autowired
     private CustomAuthenticationProvider provider;
+
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
 
 
     // Filter chain security config
@@ -95,6 +99,7 @@ public class WebSecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
         builder.authenticationProvider(this.provider);
+        builder.userDetailsService(this.customUserDetailsService);
         return builder.build();
     }
 

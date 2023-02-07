@@ -50,9 +50,11 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public UserEntity findByUsername(String username) throws UsernameNotFoundException {
-        return this.repository.findByUsername(username).orElseThrow(
-                () -> new UsernameNotFoundException("User with username " + username + " not found")
+    public UserEntity findByFirstName(String firstName) throws UserNotFoundException {
+        return this.repository.findByFirstName(firstName).orElseThrow(
+                () -> new UsernameNotFoundException("User with first name " + firstName + " not found")
         );
     }
+
+
 }

@@ -51,10 +51,10 @@ public class RegistrationService {
                 // Saving user with builder
                 user.builder()
                         .setEmail(dto.getEmail())
-                        .setUsername(dto.getUsername())
+                        .setFirstName(dto.getFirstName())
                         .setPassword(dto.getPassword())
                         .date(this.dateProvider.now())
-                        .role(RoleEntity.USER.getRoleName())// TODO: Role definition
+                        .role(RoleEntity.USER)
                         .isEnabled(true)
                         .build();
 

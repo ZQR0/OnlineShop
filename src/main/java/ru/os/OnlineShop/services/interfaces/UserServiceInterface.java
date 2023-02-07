@@ -19,5 +19,5 @@ public interface UserServiceInterface {
     UserEntity findById(Long id) throws UserNotFoundException;
     List<UserEntity> getAllUsers();
     UserEntity findByEmail(String email) throws UserNotFoundException;
-    UserEntity findByUsername(String username) throws UsernameNotFoundException;
+    UserEntity findByFirstName(String firstName) throws UserNotFoundException;
 }

@@ -11,8 +11,8 @@ public class UserRequestModel {
     @JsonProperty("email")
     private String email;
 
-    @JsonProperty("username")
-    private String username;
+    @JsonProperty("first_name")
+    private String firstName;
 
     @JsonProperty("password")
     private String password;

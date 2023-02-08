@@ -69,17 +69,17 @@ public class UserController {
             params = "username",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<?> getByUsername(@RequestParam(name = "username") String username) {
+    public ResponseEntity<?> getByUsername(@RequestParam(name = "first-name") String firstName) {
         try {
-            UserEntity user = this.userService.findByUsername(username);
+            UserEntity user = this.userService.findByFirstName(firstName);
             return new ResponseEntity<>(
                     user, HttpStatus.OK
             );
-        } catch (UsernameNotFoundException ex) {
+        } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(
                     new HttpErrorHandler(
                             HttpStatus.NOT_FOUND.value(),
-                            "User with username " + username + " not found"
+                            "User with first name " + firstName + " not found"
                     ),
                     HttpStatus.NOT_FOUND
             );

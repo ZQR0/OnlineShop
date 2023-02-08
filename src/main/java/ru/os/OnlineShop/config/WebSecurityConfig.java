@@ -76,8 +76,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(
                         (auth) -> auth
                                 .requestMatchers(container.defaultAPI_URL).permitAll()
-                                .requestMatchers(container.adminAdvanced_URL).hasRole(RoleEntity.ADMIN.getRoleName())
-                                .requestMatchers(container.defaultAdminURL).hasRole(RoleEntity.ADMIN.getRoleName())
+                                .requestMatchers(container.adminAdvanced_URL).hasRole(RoleEntity.ADMIN.name())
+                                .requestMatchers(container.defaultAdminURL).hasRole(RoleEntity.ADMIN.name())
                                 .requestMatchers(container.advanced_API_URl).permitAll()
                                 .requestMatchers(container.signInAuthUrl).permitAll()
                                 .anyRequest().authenticated()
@@ -112,23 +112,17 @@ public class WebSecurityConfig {
         UserDetails user = User.builder()
                 .username("user")
                 .password("user1234")
-                .roles(RoleEntity.USER.getRoleName())
+                .roles(RoleEntity.USER.name())
                 .build();
 
         UserDetails admin = User.builder()
                 .username("admin")
                 .password("admin123")
-                .roles(RoleEntity.ADMIN.getRoleName())
-                .build();
-
-        UserDetails bannedUser = User.builder()
-                .username("banned")
-                .password("banned12")
-                .roles(RoleEntity.BANNED.getRoleName())
+                .roles(RoleEntity.ADMIN.name())
                 .build();
 
         Logger.getLogger("In memory authorized fake-users").info("In memory users сreated");
 
-        return new InMemoryUserDetailsManager(user, admin, bannedUser);
+        return new InMemoryUserDetailsManager(user, admin);
     }
 }

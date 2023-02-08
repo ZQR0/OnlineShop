@@ -15,8 +15,8 @@ import java.io.Serializable;
 public class UserDTO implements Serializable {
     @JsonProperty("email")
     private String email;
-    @JsonProperty("username")
-    private String username;
+    @JsonProperty("first_name")
+    private String firstName;
     @JsonProperty("password")
     private String password;
 }

@@ -1,10 +1,12 @@
 package ru.os.OnlineShop.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,13 +16,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.security.RestAuthEntryPoint;
 import ru.os.OnlineShop.security.auth.CustomAuthenticationProvider;
-import ru.os.OnlineShop.security.filters.CookieAuthFilter;
-import ru.os.OnlineShop.security.filters.EmailPasswordAuthFilter;
+import ru.os.OnlineShop.security.filters.JwtAuthenticationFilter;
 import ru.os.OnlineShop.services.CustomUserDetailsService;
 import ru.os.OnlineShop.utils.URLAddressesContainer;
 
@@ -48,6 +49,19 @@ public class WebSecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
 
 
+    @Value(value = "${auth.admin.login}")
+    private String ADMIN_LOGIN;
+
+    @Value(value = "${auth.admin.password}")
+    private String ADMIN_PASSWORD;
+
+    @Value(value = "${auth.user.login}")
+    private String USER_LOGIN;
+
+    @Value(value = "${auth.user.password}")
+    private String USER_PASSWORD;
+
+
     // Filter chain security config
     @Bean(name = "security_bean")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -55,26 +69,16 @@ public class WebSecurityConfig {
         http
                 // disabling CSRF-protection
                 .csrf().disable()
-
                 // Session management configuration
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        .invalidSessionUrl("/logout")
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(false)
                 )
-                // Filters for HTTP-request (Auth requests basically)
-                .addFilterBefore(new EmailPasswordAuthFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new CookieAuthFilter(), EmailPasswordAuthFilter.class)
                 .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint)
                 .and()
-                .logout(logout -> logout.deleteCookies(CookieAuthFilter.COOKIE_NAME)
-                        .deleteCookies("JSESSIONID")
-                        .invalidateHttpSession(true))
-
+                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 // all allowed URL-addresses with their roles
                 .authorizeHttpRequests(
-                        (auth) -> auth
+                        auth -> auth
                                 .requestMatchers(container.defaultAPI_URL).permitAll()
                                 .requestMatchers(container.adminAdvanced_URL).hasRole(RoleEntity.ADMIN.name())
                                 .requestMatchers(container.defaultAdminURL).hasRole(RoleEntity.ADMIN.name())
@@ -96,11 +100,16 @@ public class WebSecurityConfig {
 
     // Getting auth-manager to make auth-functionality
     @Bean(name = "auth_manager_bean")
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        builder.authenticationProvider(this.provider);
-        builder.userDetailsService(this.customUserDetailsService);
-        return builder.build();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean(name = "auth_provider")
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(this.customUserDetailsService);
+
+        return daoAuthenticationProvider;
     }
 
     // In this method we create all
@@ -110,14 +119,14 @@ public class WebSecurityConfig {
     @Bean(name = "in_memory_auth_bean")
     public UserDetailsService inMemoryAuthBean() {
         UserDetails user = User.builder()
-                .username("user")
-                .password("user1234")
+                .username(this.USER_LOGIN)
+                .password(this.USER_PASSWORD)
                 .roles(RoleEntity.USER.name())
                 .build();
 
         UserDetails admin = User.builder()
-                .username("admin")
-                .password("admin123")
+                .username(this.ADMIN_LOGIN)
+                .password(this.ADMIN_PASSWORD)
                 .roles(RoleEntity.ADMIN.name())
                 .build();
 

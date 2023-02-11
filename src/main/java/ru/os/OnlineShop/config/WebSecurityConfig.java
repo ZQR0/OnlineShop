@@ -101,6 +101,7 @@ public class WebSecurityConfig {
     // Getting auth-manager to make auth-functionality
     @Bean(name = "auth_manager_bean")
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        Logger.getLogger("Authentication Manager").info("Auth Manager launched");
         return configuration.getAuthenticationManager();
     }
 
@@ -108,6 +109,8 @@ public class WebSecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(this.customUserDetailsService);
+
+        Logger.getLogger("Authentication Provider").info("Auth Provider launched");
 
         return daoAuthenticationProvider;
     }
@@ -130,7 +133,7 @@ public class WebSecurityConfig {
                 .roles(RoleEntity.ADMIN.name())
                 .build();
 
-        Logger.getLogger("In memory authorized fake-users").info("In memory users сreated");
+        Logger.getLogger("In memory authorized fake-users").info("In memory users created");
 
         return new InMemoryUserDetailsManager(user, admin);
     }

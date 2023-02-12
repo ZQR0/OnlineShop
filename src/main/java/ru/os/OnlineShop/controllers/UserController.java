@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.os.OnlineShop.controllers.handlers.HttpErrorHandler;
 import ru.os.OnlineShop.controllers.models.UserRequestModel;
@@ -65,7 +64,7 @@ public class UserController {
 
 
     @GetMapping(
-            path = "api/user/by-username/",
+            path = "api/user/by-first-name/",
             params = "username",
             produces = MediaType.APPLICATION_JSON_VALUE
     )

@@ -20,7 +20,6 @@ import java.util.List;
 * @version 0.1
 * User database entity main class
 */
-@AllArgsConstructor
 @Entity
 @Table(name = "user_table")
 @Data
@@ -47,13 +46,13 @@ public class UserEntity implements UserDetails {
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "register_time", nullable = false, unique = false)
+    @Column(name = "register_time", nullable = false)
     private Date registerTime;
 
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private RoleEntity role;
+    private RoleEntity role = RoleEntity.USER;
 
     // Constructor
     public UserEntity(String email, String firstName, String password, Boolean isEnabled, Date registerTime, RoleEntity role) {
@@ -64,6 +63,8 @@ public class UserEntity implements UserDetails {
         this.registerTime = registerTime;
         this.role = role;
     }
+
+    public UserEntity() {}
 
     // Override methods
     @Override

@@ -65,7 +65,7 @@ public class UserController {
 
     @GetMapping(
             path = "api/user/by-first-name/",
-            params = "username",
+            params = "first-name",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<?> getByUsername(@RequestParam(name = "first-name") String firstName) {

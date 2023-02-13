@@ -4,17 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -43,11 +39,10 @@ public class WebSecurityConfig {
     private URLAddressesContainer container;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private AuthenticationProvider authenticationProvider;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    private CustomUserDetailsService customUserDetailsService;
 
     @Value(value = "${auth.admin.login}")
     private String ADMIN_LOGIN;
@@ -75,7 +70,7 @@ public class WebSecurityConfig {
                 )
                 .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint)
                 .and()
-                .authenticationProvider(this.authenticationProvider())
+                .authenticationProvider(this.authenticationProvider)
                 .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 // all allowed URL-addresses with their roles
                 .authorizeHttpRequests(
@@ -97,27 +92,6 @@ public class WebSecurityConfig {
     @Bean(name = "http_event_publisher_bean")
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
-    }
-
-    // Getting auth-manager to make auth-functionality
-    @Bean(name = "auth_manager_bean")
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        Logger.getLogger("Authentication Manager").info("Auth Manager launched");
-        return configuration.getAuthenticationManager();
-    }
-
-    @Bean(name = "auth_provider")
-    public AuthenticationProvider authenticationProvider() {
-        // Authentication provider requires a UserDetailsService and PasswordEncoder
-        // for ProviderManager class
-
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(this.customUserDetailsService);
-        daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder);
-
-        Logger.getLogger("Authentication Provider").info("Auth Provider launched");
-
-        return daoAuthenticationProvider;
     }
 
     // In this method we create all

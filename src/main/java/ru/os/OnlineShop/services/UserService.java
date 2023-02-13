@@ -22,9 +22,6 @@ public class UserService implements UserServiceInterface {
     private UserRepository repository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private DateProvider dateProvider;
 
     @Autowired

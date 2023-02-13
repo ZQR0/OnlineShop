@@ -14,13 +14,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.security.RestAuthEntryPoint;
-import ru.os.OnlineShop.security.auth.CustomAuthenticationProvider;
 import ru.os.OnlineShop.security.filters.JwtAuthenticationFilter;
 import ru.os.OnlineShop.services.CustomUserDetailsService;
 import ru.os.OnlineShop.utils.URLAddressesContainer;
@@ -43,10 +43,10 @@ public class WebSecurityConfig {
     private URLAddressesContainer container;
 
     @Autowired
-    private CustomAuthenticationProvider provider;
+    private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private PasswordEncoder passwordEncoder;
 
 
     @Value(value = "${auth.admin.login}")
@@ -75,6 +75,7 @@ public class WebSecurityConfig {
                 )
                 .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint)
                 .and()
+                .authenticationProvider(this.authenticationProvider())
                 .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 // all allowed URL-addresses with their roles
                 .authorizeHttpRequests(
@@ -107,8 +108,12 @@ public class WebSecurityConfig {
 
     @Bean(name = "auth_provider")
     public AuthenticationProvider authenticationProvider() {
+        // Authentication provider requires a UserDetailsService and PasswordEncoder
+        // for ProviderManager class
+
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(this.customUserDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder);
 
         Logger.getLogger("Authentication Provider").info("Auth Provider launched");
 
@@ -137,4 +142,5 @@ public class WebSecurityConfig {
 
         return new InMemoryUserDetailsManager(user, admin);
     }
+
 }

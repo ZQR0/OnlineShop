@@ -108,36 +108,4 @@ public class UserController {
         }
     }
 
-    @RequestMapping(
-            path = "api/user/sign-up",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<?> signUpUser(@RequestBody UserRequestModel requestModel) {
-        try {
-            UserDTO dto = this.mapper.map(requestModel, UserDTO.class);
-            this.registrationService.register(dto);
-
-            return new ResponseEntity<>(
-                    "Successfully signed up", HttpStatus.OK
-            );
-        } catch (UserAlreadyExistsException ex) {
-            return new ResponseEntity<>(
-                    new HttpErrorHandler(
-                            HttpStatus.BAD_REQUEST.value(),
-                            "User with this credentials already exists"
-                    ),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (EmailValidationException ex) {
-            return new ResponseEntity<>(
-                    new HttpErrorHandler(
-                            HttpStatus.BAD_REQUEST.value(),
-                            "Email validation failed"
-                    ),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-    }
-
 }

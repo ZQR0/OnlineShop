@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.os.OnlineShop.controllers.handlers.HttpErrorHandler;
+import ru.os.OnlineShop.controllers.models.AuthenticationResponseModel;
 import ru.os.OnlineShop.controllers.models.UserRequestModel;
 import ru.os.OnlineShop.dto.UserDTO;
 import ru.os.OnlineShop.exceptions.EmailValidationException;
@@ -38,10 +39,10 @@ public class SignUpController {
     public ResponseEntity<?> signUpUser(@RequestBody UserRequestModel requestModel) {
         try {
             UserDTO dto = this.mapper.map(requestModel, UserDTO.class);
-            this.registrationService.register(dto);
+            AuthenticationResponseModel token = this.registrationService.register(dto);
 
             return new ResponseEntity<>(
-                    "Successfully signed up", HttpStatus.OK
+                    token, HttpStatus.OK
             );
         } catch (UserAlreadyExistsException ex) {
             return new ResponseEntity<>(

@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.os.OnlineShop.controllers.models.AuthenticationResponseModel;
 import ru.os.OnlineShop.dto.UserDTO;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.entities.UserEntity;
@@ -35,9 +36,12 @@ public class RegistrationService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtService jwtService;
+
 
     // Can throw 2 exceptions
-    public void register(UserDTO dto) throws UserAlreadyExistsException, EmailValidationException {
+    public AuthenticationResponseModel register(UserDTO dto) throws UserAlreadyExistsException, EmailValidationException {
 
         // UserDTO - source class
         // UserEntity - destination class
@@ -52,7 +56,7 @@ public class RegistrationService {
                 user.builder()
                         .setEmail(dto.getEmail())
                         .setFirstName(dto.getFirstName())
-                        .setPassword(dto.getPassword())
+                        .setPassword(this.passwordEncoder.encode(dto.getPassword())) //TODO : fix
                         .date(this.dateProvider.now())
                         .role(RoleEntity.USER)
                         .isEnabled(true)
@@ -60,13 +64,20 @@ public class RegistrationService {
 
                 this.repository.save(user);
 
-                Logger.getLogger("User registration").info("User is registered (Successfully)");
+                log.info("User is registered (Successfully)");
+
+                String generatedToken = this.jwtService.getGeneratedToken(user);
+
+                return AuthenticationResponseModel.builder()
+                        .token(generatedToken)
+                        .build();
+
             } else {
-                Logger.getLogger("User registration").info("User isn't registered (email validation failed)");
+                log.info("User is not registered (email validation failed)");
                 throw new EmailValidationException("Email validation failed");
             }
         } else {
-            Logger.getLogger("User registration").info("User isn't registered (already exists)");
+            log.info("User isn't registered (already exists)");
             throw new UserAlreadyExistsException("User already exists");
         }
     }

@@ -2,54 +2,51 @@ package ru.os.OnlineShop.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import ru.os.OnlineShop.controllers.models.AuthenticationResponseModel;
 import ru.os.OnlineShop.dto.AuthDTO;
-import ru.os.OnlineShop.exceptions.AuthenticationFailedException;
-import ru.os.OnlineShop.security.auth.CustomAuthenticationToken;
+import ru.os.OnlineShop.entities.UserEntity;
+import ru.os.OnlineShop.exceptions.UserNotFoundException;
 import ru.os.OnlineShop.services.interfaces.AuthServiceInterface;
-import ru.os.OnlineShop.utils.ValidationComponent;
 
-import java.util.logging.Logger;
 
-/*
-* @author ZQR0
-* @since 03.02.2023
-* Auth method should validate input email & password
-*/
 @Service
 @Slf4j
 public class AuthService implements AuthServiceInterface {
 
     @Autowired
-    private ValidationComponent validationComponent;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private UserService userService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Override
-    public UserDetails signIn(AuthDTO dto) throws AuthenticationFailedException {
-        final String email = dto.getEmail();
-        if (this.validationComponent.userExistsByEmail(email)) {
-            Logger.getLogger("AuthService Logger").info("Authentication transfer to CustomUserDetails");
-            return this.userDetailsService.loadUserByUsername(email);
+    public AuthenticationResponseModel signIn(AuthDTO dto) {
+        try {
+            this.authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            dto.getEmail(),
+                            dto.getPassword()
+                    )
+            );
+
+            UserEntity userByEmail = this.userService.findByEmail(dto.getEmail());
+
+            String jwtToken = this.jwtService.getGeneratedToken(userByEmail);
+
+            return AuthenticationResponseModel.builder()
+                    .token(jwtToken)
+                    .build();
+        } catch (UserNotFoundException ex) {
+            return AuthenticationResponseModel.builder()
+                    .token("No token (credentials are invalid)")
+                    .build();
         }
-
-        Logger.getLogger("AuthService Logger").info("Email is not valid");
-        throw new AuthenticationFailedException("Authentication failed");
-    }
-
-    @Override
-    public void signOut() {
-        SecurityContextHolder.clearContext();
-    }
-
-    public String createCookieToken(AuthDTO dto) {
-        return dto.getEmail() + ":" + dto.getPassword();
     }
 
 }

@@ -1,24 +1,17 @@
 package ru.os.OnlineShop.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.security.RestAuthEntryPoint;
 import ru.os.OnlineShop.security.filters.JwtAuthenticationFilter;
-import ru.os.OnlineShop.services.CustomUserDetailsService;
 import ru.os.OnlineShop.utils.URLAddressesContainer;
 
 import java.util.logging.Logger;
@@ -42,20 +35,7 @@ public class WebSecurityConfig {
     private AuthenticationProvider authenticationProvider;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-
-    @Value(value = "${auth.admin.login}")
-    private String ADMIN_LOGIN;
-
-    @Value(value = "${auth.admin.password}")
-    private String ADMIN_PASSWORD;
-
-    @Value(value = "${auth.user.login}")
-    private String USER_LOGIN;
-
-    @Value(value = "${auth.user.password}")
-    private String USER_PASSWORD;
-
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     // Filter chain security config
     @Bean(name = "security_bean")
@@ -71,7 +51,7 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint)
                 .and()
                 .authenticationProvider(this.authenticationProvider)
-                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 // all allowed URL-addresses with their roles
                 .authorizeHttpRequests(
                         auth -> auth
@@ -86,35 +66,6 @@ public class WebSecurityConfig {
         Logger.getLogger("Web Security Logger").info("Security works");
 
         return http.build();
-    }
-
-    // Added this to allow only one session in active
-    @Bean(name = "http_event_publisher_bean")
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
-    }
-
-    // In this method we create all
-    // in memory users
-    // For example, we contain ADMIN there
-    // TODO: Use .properties file to contain all logins/passwords in there
-    @Bean(name = "in_memory_auth_bean")
-    public UserDetailsService inMemoryAuthBean() {
-        UserDetails user = User.builder()
-                .username(this.USER_LOGIN)
-                .password(this.USER_PASSWORD)
-                .roles(RoleEntity.USER.name())
-                .build();
-
-        UserDetails admin = User.builder()
-                .username(this.ADMIN_LOGIN)
-                .password(this.ADMIN_PASSWORD)
-                .roles(RoleEntity.ADMIN.name())
-                .build();
-
-        Logger.getLogger("In memory authorized fake-users").info("In memory users created");
-
-        return new InMemoryUserDetailsManager(user, admin);
     }
 
 }

@@ -8,29 +8,34 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ru.os.OnlineShop.services.CustomUserDetailsService;
-
-import java.util.logging.Logger;
+import ru.os.OnlineShop.repositories.UserRepository;
 
 @Configuration
 @Slf4j
 public class AppConfig {
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private UserRepository repository;
 
-    @Bean(name = "bcrypt_bean")
+    @Bean(name = "password_encoder_bean")
     public PasswordEncoder passwordEncoder() {
-        Logger.getLogger("PasswordEncoder Logger").info("PasswordEncoder bean created");
-
+        log.info("PasswordEncoder bean created");
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean(name = "user_details_service_bean")
+    public UserDetailsService userDetailsService() {
+        return username -> this.repository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean(name = "auth_manager")
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        Logger.getLogger("Authentication Manager").info("Auth Manager launched");
+        log.info("Auth Manager launched");
         return configuration.getAuthenticationManager();
     }
 
@@ -40,10 +45,10 @@ public class AppConfig {
         // for ProviderManager class
 
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(this.customUserDetailsService);
+        daoAuthenticationProvider.setUserDetailsService(this.userDetailsService());
         daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
 
-        Logger.getLogger("Authentication Provider").info("Auth Provider launched");
+        log.info("Auth Provider launched");
 
         return daoAuthenticationProvider;
     }

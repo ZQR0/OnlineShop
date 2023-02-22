@@ -25,7 +25,9 @@ import java.util.function.Function;
 public class JwtService implements JwtServiceInterface {
 
     @Value(value = "${jwt.secret.key}")
-    private String JWT_SECRET_KEY;
+    private String JWT_SECRET;
+
+    private final Date EXPIRATION_TIME = new Date(System.currentTimeMillis() + 1000 * 60 * 24);
 
     @Override
     public String extractUsername(String token) {
@@ -53,16 +55,17 @@ public class JwtService implements JwtServiceInterface {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(this.EXPIRATION_TIME)
                 .signWith(this.getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
 
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         log.info("isTokenValid works");
-        return (username.equals(userDetails.getUsername())) && isTokenExpired(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     @Override
@@ -80,7 +83,8 @@ public class JwtService implements JwtServiceInterface {
     @Override
     public Claims extractAllClaims(String token) {
         log.info("extractAllClaims works");
-        return Jwts.parserBuilder()
+        return Jwts
+                .parserBuilder()
                 .setSigningKey(this.getSignInKey())
                 .build()
                 .parseClaimsJws(token)
@@ -89,7 +93,7 @@ public class JwtService implements JwtServiceInterface {
 
     @Override
     public Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(this.JWT_SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(this.JWT_SECRET);
         log.info("getSignInKey works");
         return Keys.hmacShaKeyFor(keyBytes);
     }

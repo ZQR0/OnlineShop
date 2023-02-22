@@ -13,7 +13,9 @@ import ru.os.OnlineShop.utils.DateProvider;
 import ru.os.OnlineShop.utils.ValidationComponent;
 
 import java.util.List;
+import java.util.Optional;
 
+// TODO: update
 @Service
 @Slf4j
 public class UserService implements UserServiceInterface {
@@ -26,6 +28,9 @@ public class UserService implements UserServiceInterface {
 
     @Autowired
     private ValidationComponent validationComponent;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserEntity findById(Long id) throws UserNotFoundException {
@@ -53,5 +58,17 @@ public class UserService implements UserServiceInterface {
         );
     }
 
+    public Optional<UserEntity> validateEmailAndPassword(String email, String password) {
+        return this.repository.findByEmail(email)
+                .filter(user -> this.passwordEncoder.matches(password, user.getPassword()));
+    }
+
+    @Override
+    public String deleteUserById(Long id) throws UserNotFoundException {
+        UserEntity userById = this.findById(id);
+        this.repository.deleteById(id);
+
+        return "User deleted";
+    }
 
 }

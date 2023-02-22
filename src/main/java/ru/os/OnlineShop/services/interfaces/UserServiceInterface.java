@@ -20,4 +20,5 @@ public interface UserServiceInterface {
     List<UserEntity> getAllUsers();
     UserEntity findByEmail(String email) throws UserNotFoundException;
     UserEntity findByFirstName(String firstName) throws UserNotFoundException;
+    String deleteUserById(Long id) throws UserNotFoundException;
 }

@@ -44,6 +44,8 @@ public class WebSecurityConfig {
         http
                 // disabling CSRF-protection
                 .csrf().disable()
+                .httpBasic()
+                .and()
                 // Session management configuration
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -51,7 +53,6 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(this.restAuthEntryPoint)
                 .and()
                 .authenticationProvider(this.authenticationProvider)
-                .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 // all allowed URL-addresses with their roles
                 .authorizeHttpRequests(
                         auth -> auth

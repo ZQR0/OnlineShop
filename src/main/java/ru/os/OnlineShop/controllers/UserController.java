@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.os.OnlineShop.controllers.handlers.HttpErrorHandler;
 import ru.os.OnlineShop.controllers.models.UserRequestModel;
@@ -104,6 +105,29 @@ public class UserController {
                             "User with email " + email + " not found"
                     ),
                     HttpStatus.NOT_FOUND
+            );
+        }
+    }
+
+
+    @DeleteMapping(
+            path = "api/user/delete-by-id",
+            params = "id"
+    )
+    public ResponseEntity<?> deleteUserById(@RequestParam Long id) {
+        try {
+            String result = this.userService.deleteUserById(id);
+
+            return new ResponseEntity<>(
+                    result, HttpStatus.OK
+            );
+        } catch (UserNotFoundException ex) {
+            return new ResponseEntity<>(
+                    new HttpErrorHandler(
+                            HttpStatus.BAD_REQUEST.value(),
+                            ""
+                    ),
+                    HttpStatus.BAD_REQUEST
             );
         }
     }

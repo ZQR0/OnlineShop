@@ -58,9 +58,10 @@ public class UserService implements UserServiceInterface {
         );
     }
 
-    public Optional<UserEntity> validateEmailAndPassword(String email, String password) {
+    public UserEntity validateEmailAndPassword(String email, String password) throws UserNotFoundException {
         return this.repository.findByEmail(email)
-                .filter(user -> this.passwordEncoder.matches(password, user.getPassword()));
+                .filter(user -> this.passwordEncoder.matches(password, user.getPassword()))
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Override

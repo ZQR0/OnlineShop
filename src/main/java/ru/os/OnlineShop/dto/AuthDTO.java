@@ -6,9 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 
+/*
+ * @author ZQR0
+ * @since 04.01.2023
+ * DTO (Data Transfer Object) for Authentication
+ * We use Lombok @Data here to create Getters/Setters for fields
+ */
 @Data
-@Slf4j
-public class AuthDTO implements Serializable {
+public class AuthDTO extends AbstractDto {
 
     @JsonProperty(value = "email")
     private String email;

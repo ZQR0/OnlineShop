@@ -12,7 +12,7 @@ import java.io.Serializable;
 * We use Lombok @Data here to create Getters/Setters for fields
 */
 @Data
-public class UserDTO implements Serializable {
+public class UserDTO extends AbstractDto {
     @JsonProperty("email")
     private String email;
     @JsonProperty("first_name")

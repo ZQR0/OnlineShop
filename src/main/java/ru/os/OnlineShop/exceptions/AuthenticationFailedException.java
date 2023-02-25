@@ -1,6 +1,6 @@
 package ru.os.OnlineShop.exceptions;
 
-public class AuthenticationFailedException extends Throwable{
+public class AuthenticationFailedException extends Exception {
 
     public AuthenticationFailedException(String msg) {
         super(msg);

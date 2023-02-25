@@ -1,6 +1,6 @@
 package ru.os.OnlineShop.exceptions;
 
-public class UserAlreadyExistsException extends Throwable {
+public class UserAlreadyExistsException extends Exception {
 
     public UserAlreadyExistsException(String msg) {
         super(msg);

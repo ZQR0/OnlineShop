@@ -2,7 +2,6 @@ package ru.os.OnlineShop.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,7 +35,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "first_name", unique = true, nullable = false)
     private String firstName;
 
-    @Column(name = "password", nullable = false, unique = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "is_enabled", nullable = false)

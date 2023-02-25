@@ -1,4 +1,4 @@
-package ru.os.OnlineShop.controllers.models;
+package ru.os.OnlineShop.models;
 
 import lombok.Builder;
 import lombok.Data;

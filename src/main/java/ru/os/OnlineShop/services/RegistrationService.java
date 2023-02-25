@@ -5,7 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.os.OnlineShop.controllers.models.AuthenticationResponseModel;
+import ru.os.OnlineShop.models.AuthenticationResponseModel;
 import ru.os.OnlineShop.dto.UserDTO;
 import ru.os.OnlineShop.entities.RoleEntity;
 import ru.os.OnlineShop.entities.UserEntity;
@@ -14,8 +14,6 @@ import ru.os.OnlineShop.exceptions.UserAlreadyExistsException;
 import ru.os.OnlineShop.repositories.UserRepository;
 import ru.os.OnlineShop.utils.DateProvider;
 import ru.os.OnlineShop.utils.ValidationComponent;
-
-import java.util.logging.Logger;
 
 @Service
 @Slf4j

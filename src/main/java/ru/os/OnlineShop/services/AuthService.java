@@ -5,10 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
-import ru.os.OnlineShop.controllers.models.AuthenticationResponseModel;
+import ru.os.OnlineShop.models.AuthenticationResponseModel;
 import ru.os.OnlineShop.dto.AuthDTO;
 import ru.os.OnlineShop.entities.UserEntity;
 import ru.os.OnlineShop.exceptions.UserNotFoundException;
+import ru.os.OnlineShop.repositories.UserRepository;
 import ru.os.OnlineShop.services.interfaces.AuthServiceInterface;
 
 
@@ -20,28 +21,31 @@ public class AuthService implements AuthServiceInterface {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserService userService;
+    private JwtService jwtService;
 
     @Autowired
-    private JwtService jwtService;
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public AuthenticationResponseModel signIn(AuthDTO dto) {
         try {
+
+            UserEntity user = this.userService.validateEmailAndPassword(dto.getEmail(), dto.getPassword());
+
             this.authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            dto.getEmail(),
-                            dto.getPassword()
+                            user.getUsername(),
+                            user.getPassword()
                     )
             );
 
-            UserEntity userByEmail = this.userService.findByEmail(dto.getEmail());
-
-            String jwtToken = this.jwtService.getGeneratedToken(userByEmail);
-
             return AuthenticationResponseModel.builder()
-                    .token(jwtToken)
+                    .token("no token")
                     .build();
+
         } catch (UserNotFoundException ex) {
             return AuthenticationResponseModel.builder()
                     .token("No token (credentials are invalid)")

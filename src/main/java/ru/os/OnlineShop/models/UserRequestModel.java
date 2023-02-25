@@ -1,4 +1,4 @@
-package ru.os.OnlineShop.controllers.models;
+package ru.os.OnlineShop.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

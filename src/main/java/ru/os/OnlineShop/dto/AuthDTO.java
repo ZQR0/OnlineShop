@@ -2,6 +2,7 @@ package ru.os.OnlineShop.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * We use Lombok @Data here to create Getters/Setters for fields
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class AuthDTO extends AbstractDto {
 
     @JsonProperty(value = "email")

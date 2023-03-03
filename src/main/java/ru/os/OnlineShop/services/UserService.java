@@ -13,7 +13,6 @@ import ru.os.OnlineShop.utils.DateProvider;
 import ru.os.OnlineShop.utils.ValidationComponent;
 
 import java.util.List;
-import java.util.Optional;
 
 // TODO: update
 @Service
@@ -47,14 +46,14 @@ public class UserService implements UserServiceInterface {
     @Override
     public UserEntity findByEmail(String email) throws UserNotFoundException {
         return this.repository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("User with email " + email + " not found")
+                () -> new UserNotFoundException("User with email " + email + " not found")
         );
     }
 
     @Override
     public UserEntity findByFirstName(String firstName) throws UserNotFoundException {
         return this.repository.findByFirstName(firstName).orElseThrow(
-                () -> new UsernameNotFoundException("User with first name " + firstName + " not found")
+                () -> new UserNotFoundException("User with first name " + firstName + " not found")
         );
     }
 

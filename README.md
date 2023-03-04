@@ -12,6 +12,10 @@
 * Category Creation (In development)
 * Product Creation (In development)
 
+## Patterns (Code & architecture)
+* Builder
+* Data transfer object (DTO)
+
 ## Build Guide
 To start using this project, you need:
 * JDK 17+ version
